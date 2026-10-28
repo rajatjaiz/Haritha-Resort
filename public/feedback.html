@@ -1,0 +1,20 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Feedback</title><link rel="icon" href="/logo.svg"><link rel="stylesheet" href="/style.css"></head>
+<body style="padding:0"><header><img src="/logo.png" onerror="this.onerror=null;this.src='/logo.svg'" alt=""><div><h1 id="rn">Haritha Beach Resort</h1><small>Your feedback</small></div></header>
+<main id="v"><div class="card">Loading…</div></main>
+<script>
+const tok=new URLSearchParams(location.search).get('t'), v=document.getElementById('v'), R={};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function stars(k,l){return `<label>${l}</label><div class="stars" data-k="${k}">${[1,2,3,4,5].map(n=>`<button type="button" data-n="${n}">★</button>`).join('')}</div>`}
+fetch('/api/feedback/'+encodeURIComponent(tok||'')).then(r=>r.json().then(j=>({ok:r.ok,j}))).then(({ok,j})=>{
+  if(!ok) return v.innerHTML=`<div class="card">This feedback link is not valid.</div>`;
+  document.getElementById('rn').textContent=j.resort_name;
+  if(j.done) return v.innerHTML=`<div class="card"><h3>Thank you!</h3>We already have your feedback.</div>`;
+  v.innerHTML=`<div class="card"><h3>Hi ${esc(j.guest_name)}, how was your stay?</h3>${stars('rating','Overall *')}${stars('food','Food')}${stars('cleanliness','Cleanliness')}${stars('service','Service')}
+  <label>Comments</label><textarea id="c" rows="4"></textarea><br><br><button class="big" id="s">Submit</button><p id="e" class="muted"></p></div>`;
+  v.onclick=e=>{const b=e.target.closest('.stars button'); if(!b) return; const box=b.parentElement; R[box.dataset.k]=+b.dataset.n; box.querySelectorAll('button').forEach(x=>x.classList.toggle('on',+x.dataset.n<=R[box.dataset.k]));};
+  document.getElementById('s').onclick=async()=>{
+    const r=await fetch('/api/feedback/'+encodeURIComponent(tok),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...R,comment:document.getElementById('c').value})});
+    const j=await r.json(); if(r.ok) v.innerHTML=`<div class="card"><h3>🙏 Thank you!</h3>Your feedback helps us serve you better. We hope to see you again at the beach.</div>`; else document.getElementById('e').textContent=j.error;
+  };
+});
+</script></body></html>

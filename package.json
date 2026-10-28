@@ -1,0 +1,22 @@
+{
+  "name": "haritha-resort-app",
+  "version": "1.0.0",
+  "description": "In-room QR ordering, service buzzers, check-in status and feedback for Haritha Beach Resort, Suryalanka",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "build": "echo 'no build step: static files in public/ + serverless API in api/'",
+    "db:init": "node scripts/db-init.js",
+    "db:sql": "node scripts/db-sql.js"
+  },
+  "engines": {
+    "node": "22.x"
+  },
+  "dependencies": {
+    "pg": "^8.23.1"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.13"
+  }
+}
